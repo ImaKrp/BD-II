@@ -1,0 +1,1 @@
+node run_transactions.js ./test.sql
