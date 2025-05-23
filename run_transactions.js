@@ -73,5 +73,5 @@ fs.readFile(absPath, "utf8", (err, data) => {
     console.log(txt);
   });
 
-  databaseHandler(scopes);
+  // databaseHandler(scopes);
 });
