@@ -1,5 +1,7 @@
 const fs = require("fs");
 const path = require("path");
+const { Client } = require("pg");
+require("dotenv").config();
 
 const relativePath = process.argv[2];
 
@@ -7,6 +9,32 @@ if (!relativePath) {
   console.error("Erro: forneça o caminho relativo do arquivo como argumento.");
   process.exit(1);
 }
+
+const client = new Client({
+  user: process.env.PGUSER,
+  host: process.env.PGHOST,
+  database: process.env.PGDATABASE,
+  password: process.env.PGPASSWORD,
+  port: process.env.PGPORT,
+});
+
+const databaseHandler = async (scopes) => {
+  try {
+    await client.connect();
+    for (let i = 0; i < scopes.length; i++) {
+      const scope = scopes[i];
+      console.log(`\n--- Executando transação ${i + 1} ---`);
+      try {
+        await client.query(scope);
+        console.log("✓ Sucesso");
+      } catch (err) {
+        console.error("✗ Erro na execução da transação:", err.message);
+      }
+    }
+  } finally {
+    await client.end();
+  }
+};
 
 const absPath = path.resolve(__dirname, relativePath);
 fs.readFile(absPath, "utf8", (err, data) => {
@@ -18,7 +46,7 @@ fs.readFile(absPath, "utf8", (err, data) => {
   let currentIndex = 0;
   data
     .split("\n")
-    .filter((line) => line.trim()) // Ignora linhas vazias
+    .filter((line) => line.trim())
     .forEach((line, i) => {
       const upper = line.trim().toUpperCase();
 
@@ -44,4 +72,6 @@ fs.readFile(absPath, "utf8", (err, data) => {
     if (i > 0) console.log("\n------- ------- ------- ------- -------\n");
     console.log(txt);
   });
+
+  databaseHandler(scopes);
 });
