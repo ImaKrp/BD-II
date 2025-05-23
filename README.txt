@@ -1,1 +1,1 @@
-node run_transactions.js ./test.sql
+node run_transactions.js ./datafiles/test.sql
