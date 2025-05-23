@@ -1,1 +1,0 @@
-node run_transactions.js ./datafiles/test.sql
