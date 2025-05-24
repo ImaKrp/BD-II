@@ -21,15 +21,12 @@ const client = new Client({
 const databaseHandler = async (scopes) => {
   try {
     await client.connect();
-    for (let i = 0; i < scopes.length; i++) {
-      const scope = scopes[i];
-      console.log(`\n--- Executando transação ${i + 1} ---`);
-      try {
-        await client.query(scope);
-        console.log("✓ Sucesso");
-      } catch (err) {
-        console.error("✗ Erro na execução da transação:", err.message);
-      }
+
+    try {
+      await client.query(scopes.join("\n"));
+      console.log("✓ Sucesso");
+    } catch (err) {
+      console.error("✗ Erro na execução da transação:", err.message);
     }
   } finally {
     await client.end();
@@ -61,7 +58,7 @@ fs.readFile(absPath, "utf8", (err, data) => {
         ] += `\nINSERT INTO clients_log(type, transaction_id) VALUES ('START', txid_current());`;
       } else if (upper === "END;") {
         scopes[currentIndex] +=
-          `\nINSERT INTO clients_log(type, transaction_id) VALUES ('END', txid_current());\n` +
+          `\nINSERT INTO clients_log(type, transaction_id) VALUES ('COMMIT', txid_current());\n` +
           line;
       } else {
         scopes[currentIndex] += `\n` + line;
@@ -73,5 +70,5 @@ fs.readFile(absPath, "utf8", (err, data) => {
     console.log(txt);
   });
 
-  // databaseHandler(scopes);
+  databaseHandler(scopes);
 });
