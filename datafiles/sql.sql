@@ -59,15 +59,3 @@ CREATE TRIGGER trigger_client_delete
 BEFORE DELETE ON clients
 FOR EACH ROW
 EXECUTE FUNCTION client_delete();
-
--- CREATE OR REPLACE FUNCTION client_commit()
--- RETURNS void AS $$
--- BEGIN
---     INSERT INTO clients_log (type, transaction_id, client_id, name, balance)
---     VALUES ('COMMIT', txid_current(), NULL, NULL, NULL);
--- END;
--- $$ LANGUAGE plpgsql;
-
--- CREATE EVENT TRIGGER trigger_client_commit
--- ON COMMIT
--- EXECUTE client_commit();

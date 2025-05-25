@@ -23,7 +23,15 @@ const databaseHandler = async (scopes) => {
     await client.connect();
 
     try {
-      await client.query(scopes.join("\n"));
+      await client.query(
+        scopes
+          .map((txt) => {
+            if (txt.toUpperCase().includes("END;")) return txt;
+
+            return txt + `\nEND;`;
+          })
+          .join("\n")
+      );
       console.log("✓ Sucesso");
     } catch (err) {
       console.error("✗ Erro na execução da transação:", err.message);
