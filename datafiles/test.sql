@@ -15,4 +15,3 @@ INSERT INTO clients (name, balance) VALUES ('Cliente 4', 400.00);
 UPDATE clients SET balance = balance + 50 WHERE id = 3;
 BEGIN;
 INSERT INTO clients (name, balance) VALUES ('Cliente 6', 600.00); 
-DELETE FROM clients WHERE id = 3;
