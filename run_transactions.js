@@ -19,14 +19,61 @@ const client = new Client({
 });
 
 const databaseHandler = async (scopes) => {
+  const validOps = {};
+  const invalidOps = {};
+
+  scopes.forEach((txt, i) => {
+    if (txt.toUpperCase().includes("END;")) validOps[i] = txt;
+    else invalidOps[i] = txt;
+  });
+
+  Object.keys(invalidOps).forEach((key) => {
+    const txt = invalidOps[key];
+
+    const lines = [];
+    txt
+      .split("\n")
+      .filter((line) => line.trim())
+      .forEach((line, i) => {
+        if (i < 2) {
+          lines.push(line);
+        }
+
+        console.log();
+
+        const [op, ...rest] = line.split(" ");
+
+        if (op.toUpperCase() === "INSERT") {
+        }
+        if (op.toUpperCase() === "DELETE") {
+        }
+        if (op.toUpperCase() === "UPDATE") {
+        }
+
+        console.log(op, rest);
+      });
+
+    lines.push(`END;`);
+    invalidOps[key] = lines.join("\n");
+  });
+
+  console.log(invalidOps);
+
   try {
     await client.connect();
+    for (let i = 0; i < scopes.length; i++) {
+      console.log(i);
+      try {
+        let transaction = validOps[i];
+        if (invalidOps?.[i]) {
+          continue;
+        }
 
-    try {
-      await client.query(scopes.join("\n"));
-      console.log("✓ Sucesso");
-    } catch (err) {
-      console.error("✗ Erro na execução da transação:", err.message);
+        await client.query(transaction);
+        console.log(`✓ Sucesso da transação ${i}`);
+      } catch (err) {
+        console.error(`✗ Erro na execução da transação ${i}:`, err.message);
+      }
     }
   } finally {
     await client.end();
@@ -40,6 +87,7 @@ fs.readFile(absPath, "utf8", (err, data) => {
     return;
   }
   const scopes = [];
+
   let currentIndex = 0;
   data
     .split("\n")
@@ -65,10 +113,10 @@ fs.readFile(absPath, "utf8", (err, data) => {
       }
     });
 
-  scopes.forEach((txt, i) => {
-    if (i > 0) console.log("\n------- ------- ------- ------- -------\n");
-    console.log(txt);
-  });
+  // scopes.forEach((txt, i) => {
+  //   if (i > 0) console.log("\n------- ------- ------- ------- -------\n");
+  //   console.log(txt);
+  // });
 
   databaseHandler(scopes);
 });
