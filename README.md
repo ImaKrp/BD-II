@@ -17,3 +17,11 @@ Execute o script passando o caminho relativo para um arquivo `.sql`:
 ```bash
 node run_transactions.js ./datafiles/test.sql
 ```
+
+Para encerrar o banco abruptamente e apgar os resgistros da tabela clients, execute os comandos abaixo:
+OBS: comandos para o CMD
+
+```bash
+taskkill /F /IM postgres.exe
+net start postgresql-x64-17
+```
