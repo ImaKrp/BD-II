@@ -1,7 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const { Client } = require("pg");
-require("dotenv").config();
+const client = require("./utils/db_client");
 const recreateSQL = require("./utils/clear_clients");
 
 const recreateTable = process.argv[3] === "crash";
@@ -12,14 +11,6 @@ if (!relativePath) {
   console.error("Erro: forneça o caminho relativo do arquivo como argumento.");
   process.exit(1);
 }
-
-const client = new Client({
-  user: process.env.PGUSER,
-  host: process.env.PGHOST,
-  database: process.env.PGDATABASE,
-  password: process.env.PGPASSWORD,
-  port: process.env.PGPORT,
-});
 
 const databaseHandler = async (scopes) => {
   try {
