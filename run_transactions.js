@@ -2,6 +2,9 @@ const fs = require("fs");
 const path = require("path");
 const { Client } = require("pg");
 require("dotenv").config();
+const recreateSQL = require("./utils/clear_clients");
+
+const recreateTable = process.argv[3] === "crash";
 
 const relativePath = process.argv[2];
 
@@ -21,13 +24,11 @@ const client = new Client({
 const databaseHandler = async (scopes) => {
   try {
     await client.connect();
-
     try {
       await client.query(
         scopes
           .map((txt) => {
             if (txt.toUpperCase().includes("END;")) return txt;
-
             return txt + `\nEND;`;
           })
           .join("\n")
@@ -35,6 +36,13 @@ const databaseHandler = async (scopes) => {
       console.log("✓ Sucesso");
     } catch (err) {
       console.error("✗ Erro na execução da transação:", err.message);
+    }
+    if (recreateTable) {
+      try {
+        await client.query(recreateSQL);
+      } catch (err) {
+        console.error("✗ Erro limpando a tabela simulando crash");
+      }
     }
   } finally {
     await client.end();
