@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const client = require("./utils/db_client");
+const gen_client = require("./utils/db_client");
 const recreateSQL = require("./utils/clear_clients");
 
 const recreateTable = process.argv[3] === "crash";
@@ -13,6 +13,7 @@ if (!relativePath) {
 }
 
 const databaseHandler = async (scopes) => {
+  const client = gen_client();
   try {
     await client.connect();
     try {
@@ -35,6 +36,8 @@ const databaseHandler = async (scopes) => {
         console.error("✗ Erro limpando a tabela simulando crash");
       }
     }
+  } catch {
+    console.error("✗ Falha ao conectar com o banco");
   } finally {
     await client.end();
   }
@@ -51,11 +54,11 @@ fs.readFile(absPath, "utf8", (err, data) => {
   data
     .split("\n")
     .filter((line) => line.trim())
-    .forEach((line) => {
+    .forEach((line, i) => {
       const upper = line.trim().toUpperCase();
 
       if (upper === "BEGIN;") {
-        if (scopes?.length > 0) {
+        if (i > 0 && scopes?.length > 0) {
           currentIndex++;
         }
 
@@ -68,8 +71,7 @@ fs.readFile(absPath, "utf8", (err, data) => {
           `\nINSERT INTO clients_log(type, transaction_id) VALUES ('COMMIT', txid_current());\n` +
           line;
       } else {
-        if (scopes[currentIndex]) scopes[currentIndex] += `\n` + line;
-        else scopes[currentIndex] = line;
+        scopes[currentIndex] += `\n` + line;
       }
     });
 
