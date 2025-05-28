@@ -26,8 +26,14 @@ taskkill /F /IM postgres.exe
 net start postgresql-x64-17
 ```
 
-Ou utilize para limpar a tabela clients a fim de simular o crash
+Ou utilize para executar os comandos sql e em seguida limpar a tabela clients a fim de simular o crash
 
 ```bash
 node run_transactions.js ./datafiles/test.sql crash
+```
+
+Para executar o Redo execute o comando:
+
+```bash
+node redo.js
 ```
