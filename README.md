@@ -1,3 +1,8 @@
+## ▶️ Alunos
+
+- Marco Antonio Duz (2311100006)
+- Julio Carvalho Gonçalves (2311100012)
+
 ## ▶️ Requisitos
 
 Crie o arquivo `.env` na raiz do projeto com os dados do seu banco:
