@@ -54,11 +54,11 @@ fs.readFile(absPath, "utf8", (err, data) => {
   data
     .split("\n")
     .filter((line) => line.trim())
-    .forEach((line, i) => {
+    .forEach((line) => {
       const upper = line.trim().toUpperCase();
 
       if (upper === "BEGIN;") {
-        if (i > 0 && scopes?.length > 0) {
+        if (scopes?.length > 0) {
           currentIndex++;
         }
 
@@ -71,7 +71,8 @@ fs.readFile(absPath, "utf8", (err, data) => {
           `\nINSERT INTO clients_log(type, transaction_id) VALUES ('COMMIT', txid_current());\n` +
           line;
       } else {
-        scopes[currentIndex] += `\n` + line;
+        if (scopes[currentIndex]) scopes[currentIndex] += `\n` + line;
+        else scopes[currentIndex] = line;
       }
     });
 
